@@ -1,5 +1,7 @@
----
 openapi: 3.0.1
+info:
+  title: Tangram Server API
+  version: "1.0.0"
 servers:
 - url: "/"
 tags:
@@ -380,6 +382,5 @@ components:
   securitySchemes:
     bearerAuth:
       type: http
-      in: header
       scheme: bearer
       bearerFormat: JWT
