@@ -1,0 +1,385 @@
+---
+openapi: 3.0.1
+servers:
+- url: "/"
+tags:
+- name: Single Game(Tangram)
+  description: Single Game(Tangram) API
+paths:
+  "/single-game/answer":
+    post:
+      tags:
+      - Single Game(Tangram)
+      summary: Tangram 정답 확인
+      description: Tangram 정답을 제출하여 정답 여부를 확인합니다. 정답일 시 해당 스테이지를 해당 유저의 기록으로 저장합니다.
+      operationId: submitAnswer
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              "$ref": "#/components/schemas/TangramAnswerRequest"
+      responses:
+        '200':
+          description: 성공
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/TangramAnswerResponse"
+        '400':
+          description: 존재하지 않는 스테이지 번호, 시간 오류
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorDto"
+      security:
+      - bearerAuth: []
+  "/single-game":
+    get:
+      tags:
+      - Single Game(Tangram)
+      summary: Tangram 현재 스테이지 조회
+      description: 현재 유저의 Tangram 스테이지를 조회합니다.
+      operationId: getTangramStage
+      responses:
+        '200':
+          description: 성공
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/TangramStageResponse"
+      security:
+      - bearerAuth: []
+  "/single-game/{stageId}":
+    get:
+      tags:
+      - Single Game(Tangram)
+      summary: 스테이지 별 Tangram 조회
+      description: 스테이지 번호에 해당하는 Tangram을 조회합니다.
+      operationId: getTangram
+      parameters:
+      - name: stageId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: 성공
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/TangramResponse"
+        '400':
+          description: 존재하지 않는 스테이지 번호
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorDto"
+      security:
+      - bearerAuth: []
+  "/single-game/history/{tangramId}":
+    get:
+      tags:
+      - Single Game(Tangram)
+      summary: Tangram 기록 상세 조회
+      description: 해당 유저, 칠교 id에 해당하는 칠교 정보를 조회합니다.
+      operationId: getTangramHistory
+      parameters:
+      - name: tangramId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: 성공
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/TangramHistoryResponse"
+        '400':
+          description: 존재하지 않는 칠교 번호
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorDto"
+        '403':
+          description: 해당 유저가 완료하지 않은 스테이지 번호
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ErrorDto"
+      security:
+      - bearerAuth: []
+  "/single-game/histories":
+    get:
+      tags:
+      - Single Game(Tangram)
+      summary: Tangram 기록 조회
+      description: 해당 유저의 tangram 기록을 전체 조회합니다.
+      operationId: getTangramHistories
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: 성공
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/PageResponseTangramHistoriesResponse"
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    TangramAnswerRequest:
+      required:
+      - endTime
+      - image
+      - stage
+      - startTime
+      type: object
+      properties:
+        stage:
+          type: integer
+          description: 스테이지 번호
+          format: int32
+          example: 1
+        image:
+          type: string
+          format: binary
+        startTime:
+          type: string
+          description: 시작 시간
+          format: date-time
+          example: '2023-10-01T12:00:00Z'
+        endTime:
+          type: string
+          description: 종료 시간
+          format: date-time
+          example: '2023-10-01T12:05:00Z'
+    ErrorDto:
+      type: object
+      properties:
+        httpStatus:
+          type: string
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        code:
+          type: string
+        message:
+          type: string
+    TangramAnswerResponse:
+      type: object
+      properties:
+        stage:
+          type: integer
+          format: int32
+        correct:
+          type: boolean
+        correctPieces:
+          type: array
+          items:
+            type: string
+        background:
+          type: string
+          enum:
+          - SEA
+          - FOREST
+          - GRASS
+          - WATER
+          - SKY
+        animal:
+          type: string
+          enum:
+          - TURTLE
+          - RABBIT
+          - SWAN
+          - DOG
+          - DOLPHIN
+          - CRANE
+          - PARROT
+          - BEAR
+          - SHEEP
+        story:
+          type: string
+    TangramStageResponse:
+      type: object
+      properties:
+        stage:
+          type: integer
+          format: int32
+    TangramResponse:
+      type: object
+      properties:
+        stage:
+          type: integer
+          format: int32
+        background:
+          type: string
+          enum:
+          - SEA
+          - FOREST
+          - GRASS
+          - WATER
+          - SKY
+        tangramName:
+          type: string
+          enum:
+          - TURTLE
+          - RABBIT
+          - SWAN
+          - DOG
+          - DOLPHIN
+          - CRANE
+          - PARROT
+          - BEAR
+          - SHEEP
+    TangramHistoryResponse:
+      type: object
+      properties:
+        tangramId:
+          type: integer
+          format: int64
+        animal:
+          type: string
+          enum:
+          - TURTLE
+          - RABBIT
+          - SWAN
+          - DOG
+          - DOLPHIN
+          - CRANE
+          - PARROT
+          - BEAR
+          - SHEEP
+        story:
+          type: string
+    PageResponseTangramHistoriesResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            "$ref": "#/components/schemas/TangramHistoriesResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        isLast:
+          type: boolean
+    TangramHistoriesResponse:
+      type: object
+      properties:
+        stage:
+          type: integer
+          format: int32
+        tangramId:
+          type: integer
+          format: int64
+        animal:
+          type: string
+          enum:
+          - TURTLE
+          - RABBIT
+          - SWAN
+          - DOG
+          - DOLPHIN
+          - CRANE
+          - PARROT
+          - BEAR
+          - SHEEP
+  securitySchemes:
+    bearerAuth:
+      type: http
+      in: header
+      scheme: bearer
+      bearerFormat: JWT
