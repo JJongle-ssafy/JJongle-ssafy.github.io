@@ -12,23 +12,23 @@
 
   <body>
     <div id="swagger-ui"></div>
-    <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script>
-    <script>
-    window.ui = SwaggerUIBundle({
-      dom_id: '#swagger-ui',
-      "urls": [
-        { "url": "./user-server.yaml", "name": "User Service" },
-        { "url": "./tangram-server.yaml", "name": "Tangram Service" },
-        { "url": "./ox-quiz-server.yaml", "name": "OX Quiz Service" }
-      ],
-      deepLinking: true,
-      docExpansion: 'none',
-      persistAuthorization: true
-      // tryItOutEnabled: false,     // 데모면 비활성화 추천
-      // supportedSubmitMethods: []  // 호출 막기용
-    });
-  </script>
-    <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
-    <script src="./swagger-initializer.js" charset="UTF-8"> </script>
+      <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script>
+      <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+      <script>
+            window.ui = SwaggerUIBundle({
+              dom_id: '#swagger-ui',
+              "urls": [
+                { "url": "./user-server.yaml", "name": "User Service" },
+                { "url": "./tangram-server.yaml", "name": "Tangram Service" },
+                { "url": "./ox-quiz-server.yaml", "name": "OX Quiz Service" }
+              ],
+              deepLinking: true,
+              docExpansion: 'none',
+              persistAuthorization: true
+              // tryItOutEnabled: false,     // 데모면 비활성화 추천
+              // supportedSubmitMethods: []  // 호출 막기용
+            });
+        </script>
+    </div>
   </body>
 </html>
