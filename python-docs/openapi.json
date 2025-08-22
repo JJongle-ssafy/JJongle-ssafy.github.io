@@ -1,0 +1,500 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Tangram Tracker API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/multiplayer": {
+      "post": {
+        "tags": [
+          "multiplayer"
+        ],
+        "summary": "Track Multiplayer",
+        "description": "멀티플레이어 게임의 사람을 추적하고 ID 및 위치 정보를 반환합니다.",
+        "operationId": "track_multiplayer_api_multiplayer_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_track_multiplayer_api_multiplayer_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultiplayerPositionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/multiplayer/quiz/finish": {
+      "post": {
+        "tags": [
+          "multiplayer"
+        ],
+        "summary": "Quiz Finish",
+        "description": "퀴즈 종료 시 추적된 사람들의 얼굴을 추출하여 프로필 이미지 배열로 반환합니다.",
+        "operationId": "quiz_finish_api_multiplayer_quiz_finish_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_quiz_finish_api_multiplayer_quiz_finish_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProfileImage"
+                  },
+                  "type": "array",
+                  "title": "Response Quiz Finish Api Multiplayer Quiz Finish Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/singleplayer/detect": {
+      "post": {
+        "tags": [
+          "singleplayer"
+        ],
+        "summary": "Detect Objects In Image",
+        "description": "업로드된 이미지에서 객체를 탐지하고, OBB(Oriented Bounding Box) 정보를 반환합니다.\n\n각 객체에 대해 4개의 꼭짓점 좌표와 밑변의 각도를 계산하여 리턴합니다.",
+        "operationId": "detect_objects_in_image_api_singleplayer_detect_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_detect_objects_in_image_api_singleplayer_detect_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetectionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_detect_objects_in_image_api_singleplayer_detect_post": {
+        "properties": {
+          "image_file": {
+            "type": "string",
+            "format": "binary",
+            "title": "Image File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "image_file"
+        ],
+        "title": "Body_detect_objects_in_image_api_singleplayer_detect_post"
+      },
+      "Body_quiz_finish_api_multiplayer_quiz_finish_post": {
+        "properties": {
+          "session_key": {
+            "type": "string",
+            "title": "Session Key"
+          },
+          "image_file": {
+            "type": "string",
+            "format": "binary",
+            "title": "Image File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_key",
+          "image_file"
+        ],
+        "title": "Body_quiz_finish_api_multiplayer_quiz_finish_post"
+      },
+      "Body_track_multiplayer_api_multiplayer_post": {
+        "properties": {
+          "session_key": {
+            "type": "string",
+            "title": "Session Key"
+          },
+          "image_file": {
+            "type": "string",
+            "format": "binary",
+            "title": "Image File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_key",
+          "image_file"
+        ],
+        "title": "Body_track_multiplayer_api_multiplayer_post"
+      },
+      "DetectedObject": {
+        "properties": {
+          "box_points": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Box Points",
+            "description": "객체 경계 상자의 꼭짓점 4개 좌표 [[x1, y1], [x2, y2], [x3, y3], [x4, y4]]"
+          },
+          "angle": {
+            "type": "number",
+            "title": "Angle",
+            "description": "객체 경계 상자 밑변의 x축 기준 각도 (도)"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "탐지된 객체의 클래스 이름 [LT1, LT2, MT, ST1, ST2, S, P]"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence",
+            "description": "탐지에 대한 신뢰도 점수"
+          }
+        },
+        "type": "object",
+        "required": [
+          "box_points",
+          "angle",
+          "label",
+          "confidence"
+        ],
+        "title": "DetectedObject",
+        "description": "탐지된 단일 객체의 정보를 담는 스키마"
+      },
+      "DetectionResponse": {
+        "properties": {
+          "detected_objects": {
+            "items": {
+              "$ref": "#/components/schemas/DetectedObject"
+            },
+            "type": "array",
+            "title": "Detected Objects",
+            "description": "탐지된 모든 객체의 정보 리스트",
+            "examples": [
+              {
+                "detected_objects": [
+                  {
+                    "angle": 45.0,
+                    "box_points": [
+                      [
+                        410.0,
+                        156.0
+                      ],
+                      [
+                        398.0,
+                        192.0
+                      ],
+                      [
+                        442.0,
+                        203.0
+                      ],
+                      [
+                        454.0,
+                        167.0
+                      ]
+                    ],
+                    "confidence": 0.95,
+                    "label": "LT1"
+                  },
+                  {
+                    "angle": -30.0,
+                    "box_points": [
+                      [
+                        250.0,
+                        180.0
+                      ],
+                      [
+                        230.0,
+                        220.0
+                      ],
+                      [
+                        280.0,
+                        240.0
+                      ],
+                      [
+                        300.0,
+                        200.0
+                      ]
+                    ],
+                    "confidence": 0.92,
+                    "label": "MT"
+                  },
+                  {
+                    "angle": -30.0,
+                    "box_points": [
+                      [
+                        100.0,
+                        80.0
+                      ],
+                      [
+                        80.0,
+                        120.0
+                      ],
+                      [
+                        130.0,
+                        140.0
+                      ],
+                      [
+                        150.0,
+                        100.0
+                      ]
+                    ],
+                    "confidence": 0.88,
+                    "label": "S"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "detected_objects"
+        ],
+        "title": "DetectionResponse",
+        "description": "단일 이미지 객체 탐지 API의 응답 스키마"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MultiplayerPositionResponse": {
+        "properties": {
+          "sessionKey": {
+            "type": "string",
+            "title": "Sessionkey",
+            "description": "세션 키"
+          },
+          "oAreaUserPositions": {
+            "items": {
+              "$ref": "#/components/schemas/UserPosition"
+            },
+            "type": "array",
+            "title": "Oareauserpositions",
+            "description": "O 영역 사용자 위치"
+          },
+          "xAreaUserPositions": {
+            "items": {
+              "$ref": "#/components/schemas/UserPosition"
+            },
+            "type": "array",
+            "title": "Xareauserpositions",
+            "description": "X 영역 사용자 위치"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sessionKey",
+          "oAreaUserPositions",
+          "xAreaUserPositions"
+        ],
+        "title": "MultiplayerPositionResponse",
+        "description": "멀티플레이어 위치 응답 스키마",
+        "example": {
+          "oAreaUserPositions": [
+            {
+              "userId": 1,
+              "x": 100.5,
+              "y": 200.3
+            },
+            {
+              "userId": 2,
+              "x": 120.1,
+              "y": 210.7
+            },
+            {
+              "userId": 3,
+              "x": 95.8,
+              "y": 190.2
+            }
+          ],
+          "sessionKey": "6cd56862-eb35-12ba-bc24-73333330b3e9",
+          "xAreaUserPositions": [
+            {
+              "userId": 4,
+              "x": 300.2,
+              "y": 180.5
+            },
+            {
+              "userId": 5,
+              "x": 320.7,
+              "y": 200.1
+            },
+            {
+              "userId": 6,
+              "x": 280.3,
+              "y": 170.9
+            }
+          ]
+        }
+      },
+      "ProfileImage": {
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "title": "Userid",
+            "description": "사용자 ID"
+          },
+          "base64": {
+            "type": "string",
+            "title": "Base64",
+            "description": "Base64로 인코딩된 얼굴 이미지"
+          }
+        },
+        "type": "object",
+        "required": [
+          "userId",
+          "base64"
+        ],
+        "title": "ProfileImage",
+        "description": "프로필 이미지 정보",
+        "example": {
+          "base64": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
+          "userId": 1
+        }
+      },
+      "UserPosition": {
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "title": "Userid",
+            "description": "사용자 ID"
+          },
+          "x": {
+            "type": "number",
+            "title": "X",
+            "description": "x 좌표"
+          },
+          "y": {
+            "type": "number",
+            "title": "Y",
+            "description": "y 좌표"
+          }
+        },
+        "type": "object",
+        "required": [
+          "userId",
+          "x",
+          "y"
+        ],
+        "title": "UserPosition",
+        "description": "사용자 위치 정보",
+        "example": {
+          "userId": 1,
+          "x": 100.5,
+          "y": 200.3
+        }
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
