@@ -6,11 +6,6 @@
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css">
 </head>
 <body>
-  <!-- 🔹 Python Docs 버튼 -->
-  <a href="./python-docs/index.html" target="_blank" 
-     style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: #32329f; color: #fff; padding: 8px 12px; border-radius: 6px; text-decoration: none;">
-    Python Docs
-  </a>
   <div id="swagger-ui"></div>
 
   <!-- 순서 중요: bundle → standalone-preset → 초기화 -->
@@ -33,6 +28,29 @@
         validatorUrl: null
       });
     });
+    
+    // 🔹 Swagger UI 렌더링 후 버튼 삽입
+    const interval = setInterval(() => {
+      const wrapper = document.querySelector('.topbar .download-url-wrapper'); 
+      if (wrapper) {
+        const link = document.createElement('a');
+        link.href = './python-docs/index.html';
+        link.target = '_blank';
+        link.textContent = 'Python Docs';
+
+        // Swagger 스타일 맞추기
+        link.style.marginLeft = '10px';
+        link.style.padding = '6px 12px';
+        link.style.background = '#32329f';
+        link.style.color = '#fff';
+        link.style.borderRadius = '4px';
+        link.style.textDecoration = 'none';
+        link.style.fontSize = '14px';
+
+        wrapper.appendChild(link); // ✅ 드롭다운 옆에 붙이기
+        clearInterval(interval);
+      }
+    }, 500);
   </script>
 </body>
 </html>
